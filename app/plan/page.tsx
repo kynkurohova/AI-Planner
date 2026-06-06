@@ -27,10 +27,15 @@ export default function PlanPage() {
   const [editingTask, setEditingTask] = useState<Task | null>(null)
 
   const refresh = useCallback(() => {
-    const planned = loadTasks()
-      .filter(t => t.status === 'planned' && t.scheduledDate)
-      .sort((a, b) => (a.scheduledDate! > b.scheduledDate! ? 1 : -1))
-    setTasks(planned)
+    const todayStr = new Date().toISOString().split('T')[0]
+    const all = loadTasks()
+      .filter(t => t.status === 'today' || t.status === 'planned')
+      .sort((a, b) => {
+        const da = a.scheduledDate ?? (a.status === 'today' ? todayStr : '9999')
+        const db = b.scheduledDate ?? (b.status === 'today' ? todayStr : '9999')
+        return da > db ? 1 : -1
+      })
+    setTasks(all)
   }, [])
 
   useEffect(() => { refresh() }, [refresh])
@@ -38,10 +43,13 @@ export default function PlanPage() {
   const handleMoveToToday = (id: string) => { updateTaskStatus(id, 'today'); refresh() }
   const handleDelete = (id: string) => { updateTaskStatus(id, 'deleted'); refresh() }
 
-  // Group tasks by scheduledDate
+  const todayStr = new Date().toISOString().split('T')[0]
+
+  // Group tasks by effective date (today tasks → today's date, planned tasks → scheduledDate)
   const grouped: Record<string, Task[]> = {}
   tasks.forEach(t => {
-    const key = t.scheduledDate!
+    const key = t.scheduledDate ?? (t.status === 'today' ? todayStr : null)
+    if (!key) return
     if (!grouped[key]) grouped[key] = []
     grouped[key].push(t)
   })
@@ -71,7 +79,7 @@ export default function PlanPage() {
               <div key={date}>
                 <p className="text-xs uppercase tracking-widest font-bold mb-3"
                   style={{ color: 'var(--lime)' }}>
-                  {formatDate(date)}
+                  {date === todayStr ? `Сьогодні · ${formatDate(date)}` : formatDate(date)}
                 </p>
                 <div className="space-y-3">
                   {grouped[date].map(task => {
