@@ -57,7 +57,17 @@ export default function TodayPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12">
+      <div
+        className="relative flex flex-col min-h-[calc(100dvh-64px)] overflow-hidden"
+        style={{
+          backgroundImage: 'url(/today-plan-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(12,12,16,0.75)' }} />
+      <div className="relative z-10 flex flex-col flex-1 px-5 pt-12">
         <div className="flex items-end justify-between mb-2">
           <h1 className="text-3xl font-black uppercase tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Сьогодні
@@ -97,9 +107,11 @@ export default function TodayPage() {
                   key={task.id}
                   className="flex items-start gap-3 p-4 rounded-2xl"
                   style={{
-                    background: isDone ? 'rgba(200,255,51,0.07)' : 'var(--surface)',
-                    border: `1px solid ${isDone ? 'var(--lime)' : isNow ? 'var(--sky)' : 'var(--border)'}`,
+                    background: isDone ? 'rgba(200,255,51,0.07)' : 'rgba(255,255,255,0.08)',
+                    border: `1px solid ${isDone ? 'rgba(200,255,51,0.4)' : isNow ? 'rgba(91,156,246,0.5)' : 'rgba(255,255,255,0.15)'}`,
                     opacity: isDone ? 0.6 : 1,
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
                   }}
                 >
                   {/* Checkbox */}
@@ -177,7 +189,7 @@ export default function TodayPage() {
 
         {isEvening && done.length > 0 && (
           <div className="mt-6 mb-2 p-4 rounded-2xl text-center"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
             <p className="text-sm font-semibold" style={{ color: 'var(--lime)' }}>
               {done.length} з {total} задач виконано.{' '}
               {done.length === total ? 'Відмінний день!' : 'Гарна робота!'}
@@ -189,6 +201,7 @@ export default function TodayPage() {
             )}
           </div>
         )}
+      </div>
       </div>
 
       {editingTask && (

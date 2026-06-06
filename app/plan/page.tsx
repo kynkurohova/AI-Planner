@@ -68,7 +68,17 @@ export default function PlanPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12">
+      <div
+        className="relative flex flex-col min-h-[calc(100dvh-64px)] overflow-hidden"
+        style={{
+          backgroundImage: 'url(/today-plan-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(12,12,16,0.75)' }} />
+      <div className="relative z-10 flex flex-col flex-1 px-5 pt-12">
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>
           Plan
         </h1>
@@ -113,8 +123,10 @@ export default function PlanPage() {
                         key={task.id}
                         className="flex items-start gap-3 p-4 rounded-2xl"
                         style={{
-                          background: 'var(--surface)',
-                          border: `1px solid ${isMust ? 'var(--coral)' : 'var(--border)'}`,
+                          background: isMust ? 'rgba(255,92,58,0.12)' : 'rgba(255,255,255,0.08)',
+                          border: `1px solid ${isMust ? 'rgba(255,92,58,0.5)' : 'rgba(255,255,255,0.15)'}`,
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)',
                         }}
                       >
                         <div className="flex-1 min-w-0">
@@ -159,25 +171,25 @@ export default function PlanPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm px-2 py-1 rounded-lg text-center transition-all active:scale-95"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-muted)' }}
                             aria-label="Додати в Google Calendar"
                           >
                             📆
                           </a>
                           <button onClick={() => setEditingTask(task)}
                             className="text-sm px-2 py-1 rounded-lg transition-all active:scale-95"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-muted)' }}
                             aria-label="Редагувати">
                             ✏️
                           </button>
                           <button onClick={() => handleMoveToToday(task.id)}
                             className="text-xs px-2 py-1 rounded-lg font-semibold transition-all active:scale-95"
-                            style={{ background: 'var(--lime)', color: 'var(--bg)' }}>
+                            style={{ background: 'rgba(200,255,51,0.8)', color: 'var(--bg)' }}>
                             ◎
                           </button>
                           <button onClick={() => handleDelete(task.id)}
                             className="text-sm px-2 py-1 rounded-lg transition-all active:scale-95"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
                             aria-label="Видалити">
                             🗑
                           </button>
@@ -190,6 +202,7 @@ export default function PlanPage() {
             ))}
           </div>
         )}
+      </div>
       </div>
 
       {editingTask && (
