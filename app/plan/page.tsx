@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import EditTaskSheet from '@/components/EditTaskSheet'
 import { loadTasks, updateTaskStatus } from '@/lib/storage'
+import { googleCalendarUrl } from '@/lib/calendar'
 import type { Task, Complexity } from '@/lib/types'
 
 function formatDuration(min: number): string {
@@ -108,15 +109,30 @@ export default function PlanPage() {
                             <span className="text-xs font-bold uppercase" style={{ color: COMPLEXITY_COLOR[complexity] }}>
                               {complexity}
                             </span>
+                            {task.time && (
+                              <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(200,255,51,0.12)', color: 'var(--lime)' }}>
+                                {task.time}
+                              </span>
+                            )}
                             {task.deadline && (
                               <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(91,156,246,0.15)', color: 'var(--sky)' }}>
-                                о {new Date(task.deadline).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
+                                до {new Date(task.deadline).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             )}
                           </div>
                         </div>
 
                         <div className="flex flex-col gap-1.5 shrink-0">
+                          <a
+                            href={googleCalendarUrl(task)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm px-2 py-1 rounded-lg text-center transition-all active:scale-95"
+                            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+                            aria-label="Додати в Google Calendar"
+                          >
+                            📆
+                          </a>
                           <button onClick={() => setEditingTask(task)}
                             className="text-sm px-2 py-1 rounded-lg transition-all active:scale-95"
                             style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}

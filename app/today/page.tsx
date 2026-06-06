@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import ProgressBar from '@/components/ProgressBar'
 import EditTaskSheet from '@/components/EditTaskSheet'
 import { loadTasks, updateTaskStatus } from '@/lib/storage'
+import { googleCalendarUrl } from '@/lib/calendar'
 import type { Task, Complexity } from '@/lib/types'
 
 function formatDuration(min: number): string {
@@ -123,15 +124,34 @@ export default function TodayPage() {
                     </div>
                   </div>
 
-                  {/* Edit button */}
-                  <button
-                    onClick={() => setEditingTask(task)}
-                    className="text-base shrink-0 transition-all active:scale-90"
-                    style={{ color: 'var(--text-muted)' }}
-                    aria-label="Редагувати"
-                  >
-                    ✏️
-                  </button>
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    {task.time && (
+                      <span className="text-xs px-2 py-0.5 rounded-full mr-1"
+                        style={{ background: 'rgba(200,255,51,0.12)', color: 'var(--lime)' }}>
+                        {task.time}
+                      </span>
+                    )}
+                    <a
+                      href={googleCalendarUrl(task, new Date().toISOString().split('T')[0])}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-base transition-all active:scale-90"
+                      style={{ color: 'var(--text-muted)' }}
+                      aria-label="Додати в Google Calendar"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      📆
+                    </a>
+                    <button
+                      onClick={() => setEditingTask(task)}
+                      className="text-base transition-all active:scale-90"
+                      style={{ color: 'var(--text-muted)' }}
+                      aria-label="Редагувати"
+                    >
+                      ✏️
+                    </button>
+                  </div>
                 </div>
               )
             })

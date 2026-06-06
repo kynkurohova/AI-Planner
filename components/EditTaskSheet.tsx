@@ -15,12 +15,14 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
     task.deadline ? new Date(task.deadline).toISOString().slice(0, 16) : ''
   )
   const [scheduledDate, setScheduledDate] = useState(task.scheduledDate ?? '')
+  const [time, setTime] = useState(task.time ?? '')
 
   const handleSave = () => {
     updateTask(task.id, {
       title: title.trim() || task.title,
       deadline: deadline ? new Date(deadline).toISOString() : null,
       scheduledDate: scheduledDate || null,
+      time: time || null,
     })
     onSaved()
     onClose()
@@ -58,6 +60,15 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
           type="date"
           value={scheduledDate}
           onChange={e => setScheduledDate(e.target.value)}
+          className="w-full rounded-xl p-3 text-base outline-none mb-4"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+        />
+
+        <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Час початку</p>
+        <input
+          type="time"
+          value={time}
+          onChange={e => setTime(e.target.value)}
           className="w-full rounded-xl p-3 text-base outline-none mb-6"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
         />

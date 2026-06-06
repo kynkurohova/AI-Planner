@@ -8,8 +8,9 @@ export type Task = {
   priority: Priority
   complexity: Complexity
   durationMin: number
-  deadline: string | null    // ISO date-time (AI-detected or user-set)
+  deadline: string | null       // ISO date-time (AI-detected or user-set)
   scheduledDate: string | null  // ISO date user picked (YYYY-MM-DD)
+  time: string | null           // HH:MM start time for the task
   status: Status
   createdAt: string
 }

@@ -8,6 +8,7 @@ function normalize(raw: Partial<Task> & Pick<Task, 'id' | 'title' | 'priority' |
     durationMin: 30,
     deadline: null,
     scheduledDate: null,
+    time: null,
     createdAt: new Date().toISOString(),
     ...raw,
   } as Task
@@ -58,7 +59,7 @@ export function scheduleTask(id: string, date: string): void {
   saveTasks(tasks)
 }
 
-export function updateTask(id: string, changes: Partial<Pick<Task, 'title' | 'deadline' | 'scheduledDate' | 'durationMin' | 'priority' | 'complexity'>>): void {
+export function updateTask(id: string, changes: Partial<Pick<Task, 'title' | 'deadline' | 'scheduledDate' | 'time' | 'durationMin' | 'priority' | 'complexity'>>): void {
   const tasks = loadTasks()
   const task = tasks.find(t => t.id === id)
   if (task) {
