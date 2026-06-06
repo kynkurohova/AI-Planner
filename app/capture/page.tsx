@@ -44,15 +44,15 @@ export default function CapturePage() {
       className="relative flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12 overflow-hidden"
       style={{
         backgroundImage: 'url(/capture-bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center top',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center bottom',
         backgroundRepeat: 'no-repeat',
       }}
     >
       {/* dark overlay so text stays readable */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'rgba(12,12,16,0.72)' }}
+        style={{ background: 'linear-gradient(to bottom, rgba(12,12,16,0.85) 0%, rgba(12,12,16,0.6) 60%, rgba(12,12,16,0.25) 100%)' }}
       />
 
       {/* all content above overlay */}

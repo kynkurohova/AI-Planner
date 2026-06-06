@@ -72,12 +72,12 @@ export default function PlanPage() {
         className="relative flex flex-col min-h-[calc(100dvh-64px)] overflow-hidden"
         style={{
           backgroundImage: 'url(/today-plan-bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center top',
+          backgroundSize: 'contain',
+          backgroundPosition: 'center bottom',
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(12,12,16,0.75)' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(12,12,16,0.85) 0%, rgba(12,12,16,0.6) 60%, rgba(12,12,16,0.25) 100%)' }} />
       <div className="relative z-10 flex flex-col flex-1 px-5 pt-12">
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>
           Plan
