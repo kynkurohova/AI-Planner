@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import type { Task, Priority } from '@/lib/types'
+import type { Task, Priority, Complexity } from '@/lib/types'
 import { updateTask } from '@/lib/storage'
 
 interface Props {
@@ -17,6 +17,7 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
   const [scheduledDate, setScheduledDate] = useState(task.scheduledDate ?? '')
   const [time, setTime] = useState(task.time ?? '')
   const [priority, setPriority] = useState<Priority>(task.priority)
+  const [complexity, setComplexity] = useState<Complexity>(task.complexity ?? 'medium')
 
   const handleSave = () => {
     updateTask(task.id, {
@@ -25,6 +26,7 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
       scheduledDate: scheduledDate || null,
       time: time || null,
       priority,
+      complexity,
     })
     onSaved()
     onClose()
@@ -57,6 +59,24 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
               }}
             >
               {p === 'must' ? 'MUST' : 'NICE'}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Складність</p>
+        <div className="flex gap-2 mb-4">
+          {([['low', 'LOW', 'rgba(255,255,255,0.4)', 'var(--surface)'], ['medium', 'MED', '#5B9CF6', 'rgba(91,156,246,0.2)'], ['high', 'HIGH', '#FF5C3A', 'rgba(255,92,58,0.2)']] as [Complexity, string, string, string][]).map(([val, label, activeColor, activeBg]) => (
+            <button
+              key={val}
+              onClick={() => setComplexity(val)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all active:scale-95"
+              style={{
+                background: complexity === val ? activeBg : 'var(--surface)',
+                color: complexity === val ? activeColor : 'var(--text-muted)',
+                border: `1px solid ${complexity === val ? activeColor : 'var(--border)'}`,
+              }}
+            >
+              {label}
             </button>
           ))}
         </div>
