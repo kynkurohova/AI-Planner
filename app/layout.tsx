@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import NavBar from '@/components/NavBar'
+import DeadlineBanner from '@/components/DeadlineBanner'
 
 export const metadata: Metadata = {
   title: 'AI Planner',
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="uk">
       <body className="flex flex-col min-h-dvh" style={{ background: 'var(--bg)' }}>
+        <DeadlineBanner />
         <main className="flex-1 overflow-y-auto pb-20">
           {children}
         </main>

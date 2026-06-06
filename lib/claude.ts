@@ -5,15 +5,19 @@ const SYSTEM_PROMPT = `You receive a raw brain dump in Ukrainian or English. Ext
 
 Each task object:
 {
-  "title": string,           // concise task name, max 5 words
+  "title": string,              // concise task name, max 5 words
   "priority": "must" | "nice",
-  "durationMin": number,     // estimated minutes
-  "deadline": string | null  // ISO date-time if mentioned, else null
+  "complexity": "low" | "medium" | "high",
+  "durationMin": number,        // estimated minutes
+  "deadline": string | null     // ISO date-time if mentioned, else null
 }
 
 Rules:
 - "must" = time-sensitive, has a person/deliverable, or explicitly urgent
 - "nice" = vague, optional, no hard deadline
+- complexity "low" = simple/routine task, under 30 min (e.g. send a message, quick call)
+- complexity "medium" = requires focus, 30–90 min (e.g. write a doc, review something)
+- complexity "high" = complex/creative/deep work, over 90 min (e.g. build a feature, strategy session)
 - If a specific time is mentioned ("о 15", "at 3pm"), parse it as today's date + that time
 - Keep titles in the original language
 - Return only valid JSON array, no other text`
@@ -21,7 +25,7 @@ Rules:
 export async function parseTasks(
   text: string,
   today: string
-): Promise<Omit<Task, 'id' | 'status' | 'createdAt'>[]> {
+): Promise<Omit<Task, 'id' | 'status' | 'createdAt' | 'scheduledDate'>[]> {
   const client = new Anthropic()
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',

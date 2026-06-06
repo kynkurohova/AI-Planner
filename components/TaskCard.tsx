@@ -1,11 +1,14 @@
 'use client'
+import { useState } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import type { Task } from '@/lib/types'
+import type { Task, Complexity } from '@/lib/types'
 
 interface Props {
   task: Task
   onToday: (id: string) => void
+  onSchedule: (id: string, date: string) => void
   onDelete: (id: string) => void
+  onEdit: (task: Task) => void
 }
 
 function formatDuration(min: number): string {
@@ -20,7 +23,16 @@ function formatDeadlineTime(iso: string | null): string | null {
   return new Date(iso).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })
 }
 
-export default function TaskCard({ task, onToday, onDelete }: Props) {
+const COMPLEXITY_STYLE: Record<Complexity, { label: string; bg: string; color: string }> = {
+  low:    { label: 'LOW',  bg: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.4)' },
+  medium: { label: 'MED',  bg: 'rgba(91,156,246,0.15)',  color: '#5B9CF6' },
+  high:   { label: 'HIGH', bg: 'rgba(255,92,58,0.15)',   color: '#FF5C3A' },
+}
+
+export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }: Props) {
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [pickedDate, setPickedDate] = useState('')
+
   const handlers = useSwipeable({
     onSwipedRight: () => onToday(task.id),
     onSwipedLeft: () => onDelete(task.id),
@@ -30,6 +42,19 @@ export default function TaskCard({ task, onToday, onDelete }: Props) {
 
   const isMust = task.priority === 'must'
   const deadlineTime = formatDeadlineTime(task.deadline)
+  const complexity = COMPLEXITY_STYLE[task.complexity ?? 'medium']
+  const todayStr = new Date().toISOString().split('T')[0]
+
+  const handleConfirmDate = () => {
+    if (!pickedDate) return
+    if (pickedDate === todayStr) {
+      onToday(task.id)
+    } else {
+      onSchedule(task.id, pickedDate)
+    }
+    setShowDatePicker(false)
+    setPickedDate('')
+  }
 
   return (
     <div
@@ -40,56 +65,108 @@ export default function TaskCard({ task, onToday, onDelete }: Props) {
         border: `1px solid ${isMust ? 'var(--coral)' : 'var(--border)'}`,
       }}
     >
+      {/* Header row */}
       <div className="flex items-start justify-between gap-2">
         <span className="text-base font-semibold leading-snug flex-1" style={{ color: 'var(--text-primary)' }}>
           {task.title}
         </span>
-        <span
-          className="shrink-0 text-xs font-bold uppercase px-2 py-0.5 rounded-full"
-          style={{
-            background: isMust ? 'var(--coral)' : 'transparent',
-            color: isMust ? '#fff' : 'var(--text-muted)',
-            border: isMust ? 'none' : '1px solid var(--border)',
-          }}
-        >
-          {isMust ? 'MUST' : 'NICE'}
-        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span
+            className="text-xs font-bold uppercase px-2 py-0.5 rounded-full"
+            style={{
+              background: isMust ? 'var(--coral)' : 'transparent',
+              color: isMust ? '#fff' : 'var(--text-muted)',
+              border: isMust ? 'none' : '1px solid var(--border)',
+            }}
+          >
+            {isMust ? 'MUST' : 'NICE'}
+          </span>
+          <span
+            className="text-xs font-bold uppercase px-2 py-0.5 rounded-full"
+            style={{ background: complexity.bg, color: complexity.color }}
+          >
+            {complexity.label}
+          </span>
+        </div>
       </div>
 
+      {/* Chips row */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span
-          className="text-xs px-2 py-0.5 rounded-full"
-          style={{ background: 'rgba(91,156,246,0.15)', color: 'var(--sky)' }}
-        >
+        <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(91,156,246,0.15)', color: 'var(--sky)' }}>
           {formatDuration(task.durationMin)}
         </span>
         {deadlineTime && (
-          <span
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(91,156,246,0.15)', color: 'var(--sky)' }}
-          >
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(91,156,246,0.15)', color: 'var(--sky)' }}>
             о {deadlineTime}
           </span>
         )}
       </div>
 
-      <div className="flex gap-2 mt-1">
-        <button
-          onClick={() => onToday(task.id)}
-          className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
-          style={{ background: 'var(--lime)', color: 'var(--bg)' }}
-        >
-          → На сьогодні
-        </button>
-        <button
-          onClick={() => onDelete(task.id)}
-          className="w-12 flex items-center justify-center rounded-xl text-xl transition-all active:scale-95"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-          aria-label="Видалити"
-        >
-          🗑
-        </button>
-      </div>
+      {/* Date picker (expanded) */}
+      {showDatePicker && (
+        <div className="flex items-center gap-2 mt-1">
+          <input
+            type="date"
+            min={todayStr}
+            value={pickedDate}
+            onChange={e => setPickedDate(e.target.value)}
+            className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+          />
+          <button
+            onClick={handleConfirmDate}
+            disabled={!pickedDate}
+            className="px-3 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 disabled:opacity-40"
+            style={{ background: 'var(--lime)', color: 'var(--bg)' }}
+          >
+            ✓
+          </button>
+          <button
+            onClick={() => { setShowDatePicker(false); setPickedDate('') }}
+            className="px-3 py-2 rounded-xl text-sm transition-all active:scale-95"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Action buttons */}
+      {!showDatePicker && (
+        <div className="flex gap-2 mt-1">
+          <button
+            onClick={() => onToday(task.id)}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
+            style={{ background: 'var(--lime)', color: 'var(--bg)' }}
+          >
+            Сьогодні
+          </button>
+          <button
+            onClick={() => setShowDatePicker(true)}
+            className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            aria-label="Обрати дату"
+          >
+            📅
+          </button>
+          <button
+            onClick={() => onEdit(task)}
+            className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            aria-label="Редагувати"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={() => onDelete(task.id)}
+            className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            aria-label="Видалити"
+          >
+            🗑
+          </button>
+        </div>
+      )}
     </div>
   )
 }

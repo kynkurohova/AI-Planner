@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rsync -av --exclude='.git' /tmp/ai-planner/ \"/Users/anastasiia.kynkurohova/Documents/Claude/AI Planner/\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git push *)"
+    ]
+  }
+}
