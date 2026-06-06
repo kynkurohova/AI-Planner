@@ -40,46 +40,70 @@ export default function CapturePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12">
-      <h1
-        className="text-3xl font-black uppercase tracking-tight mb-2"
-        style={{ color: 'var(--lime)' }}
-      >
-        Brain dump
-      </h1>
-      <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-        Говори або пиши все підряд
-      </p>
-
-      <textarea
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder="Треба написати Анні, доробити презу, забукати зал, не забути про дзвінок о 15…"
-        className="flex-1 w-full resize-none rounded-2xl p-4 text-base leading-relaxed outline-none"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text-primary)',
-          minHeight: 200,
-        }}
+    <div
+      className="relative flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12 overflow-hidden"
+      style={{
+        backgroundImage: 'url(/capture-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* dark overlay so text stays readable */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: 'rgba(12,12,16,0.72)' }}
       />
 
-      {error && (
-        <p className="mt-3 text-sm" style={{ color: 'var(--coral)' }}>
-          {error}
-        </p>
-      )}
-
-      <div className="flex items-center gap-4 mt-6 mb-6">
-        <MicButton onTranscript={handleTranscript} onError={setError} />
-        <button
-          onClick={handleSubmit}
-          disabled={!text.trim() || isPending}
-          className="flex-1 py-5 rounded-2xl text-base font-bold uppercase tracking-wider transition-all active:scale-95 disabled:opacity-40"
-          style={{ background: 'var(--lime)', color: 'var(--bg)' }}
+      {/* all content above overlay */}
+      <div className="relative z-10 flex flex-col flex-1">
+        <h1
+          className="text-3xl font-black uppercase tracking-tight mb-2"
+          style={{ color: 'var(--lime)' }}
         >
-          {isPending ? 'Обробляю…' : 'Обробити → задачі'}
-        </button>
+          Brain dump
+        </h1>
+        <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+          Говори або пиши все підряд
+        </p>
+
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Треба написати Анні, доробити презу, забукати зал, не забути про дзвінок о 15…"
+          className="flex-1 w-full resize-none rounded-2xl p-4 text-base leading-relaxed outline-none"
+          style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.15)',
+            color: 'var(--text-primary)',
+            minHeight: 200,
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+          }}
+        />
+
+        {error && (
+          <p className="mt-3 text-sm" style={{ color: 'var(--coral)' }}>
+            {error}
+          </p>
+        )}
+
+        <div className="flex items-center gap-4 mt-6 mb-6">
+          <MicButton onTranscript={handleTranscript} onError={setError} />
+          <button
+            onClick={handleSubmit}
+            disabled={!text.trim() || isPending}
+            className="flex-1 py-5 rounded-2xl text-base font-bold uppercase tracking-wider transition-all active:scale-95 disabled:opacity-40"
+            style={{
+              background: 'rgba(200,255,51,0.85)',
+              color: 'var(--bg)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+            }}
+          >
+            {isPending ? 'Обробляю…' : 'Обробити → задачі'}
+          </button>
+        </div>
       </div>
     </div>
   )
