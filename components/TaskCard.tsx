@@ -61,8 +61,10 @@ export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }
       {...handlers}
       className="flex flex-col gap-2 rounded-2xl p-4 mb-3 transition-all active:scale-[0.98]"
       style={{
-        background: 'var(--surface)',
-        border: `1px solid ${isMust ? 'var(--coral)' : 'var(--border)'}`,
+        background: isMust ? 'rgba(255,92,58,0.12)' : 'rgba(255,255,255,0.08)',
+        border: `1px solid ${isMust ? 'rgba(255,92,58,0.5)' : 'rgba(255,255,255,0.15)'}`,
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
       }}
     >
       {/* Header row */}
@@ -111,20 +113,20 @@ export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }
             value={pickedDate}
             onChange={e => setPickedDate(e.target.value)}
             className="flex-1 rounded-xl px-3 py-2 text-sm outline-none"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-primary)' }}
           />
           <button
             onClick={handleConfirmDate}
             disabled={!pickedDate}
             className="px-3 py-2 rounded-xl text-sm font-bold transition-all active:scale-95 disabled:opacity-40"
-            style={{ background: 'var(--lime)', color: 'var(--bg)' }}
+            style={{ background: 'rgba(200,255,51,0.8)', color: 'var(--bg)' }}
           >
             ✓
           </button>
           <button
             onClick={() => { setShowDatePicker(false); setPickedDate('') }}
             className="px-3 py-2 rounded-xl text-sm transition-all active:scale-95"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-muted)' }}
           >
             ✕
           </button>
@@ -137,14 +139,14 @@ export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }
           <button
             onClick={() => onToday(task.id)}
             className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
-            style={{ background: 'var(--lime)', color: 'var(--bg)' }}
+            style={{ background: 'rgba(200,255,51,0.8)', color: 'var(--bg)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)' }}
           >
             Сьогодні
           </button>
           <button
             onClick={() => setShowDatePicker(true)}
             className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
             aria-label="Обрати дату"
           >
             📅
@@ -152,7 +154,7 @@ export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }
           <button
             onClick={() => onEdit(task)}
             className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
             aria-label="Редагувати"
           >
             ✏️
@@ -160,7 +162,7 @@ export default function TaskCard({ task, onToday, onSchedule, onDelete, onEdit }
           <button
             onClick={() => onDelete(task.id)}
             className="px-3 flex items-center justify-center rounded-xl text-base transition-all active:scale-95"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
             aria-label="Видалити"
           >
             🗑

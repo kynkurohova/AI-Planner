@@ -30,7 +30,19 @@ export default function InboxPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12">
+      <div
+        className="relative flex flex-col min-h-[calc(100dvh-64px)] overflow-hidden"
+        style={{
+          backgroundImage: 'url(/inbox-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        {/* dark overlay */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: 'rgba(12,12,16,0.72)' }} />
+
+      <div className="relative z-10 flex flex-col flex-1 px-5 pt-12">
         <h1
           className="text-3xl font-black uppercase tracking-tight mb-1"
           style={{ color: 'var(--text-primary)' }}
@@ -59,7 +71,13 @@ export default function InboxPage() {
             <button
               onClick={() => router.push('/capture')}
               className="mt-2 px-6 py-3 rounded-xl text-sm font-semibold"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--lime)' }}
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: 'var(--lime)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+              }}
             >
               Новий brain dump
             </button>
@@ -78,6 +96,7 @@ export default function InboxPage() {
             ))}
           </div>
         )}
+      </div>
       </div>
 
       {editingTask && (
