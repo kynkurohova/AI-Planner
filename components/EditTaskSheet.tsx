@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import type { Task } from '@/lib/types'
+import type { Task, Priority } from '@/lib/types'
 import { updateTask } from '@/lib/storage'
 
 interface Props {
@@ -16,6 +16,7 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
   )
   const [scheduledDate, setScheduledDate] = useState(task.scheduledDate ?? '')
   const [time, setTime] = useState(task.time ?? '')
+  const [priority, setPriority] = useState<Priority>(task.priority)
 
   const handleSave = () => {
     updateTask(task.id, {
@@ -23,6 +24,7 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
       deadline: deadline ? new Date(deadline).toISOString() : null,
       scheduledDate: scheduledDate || null,
       time: time || null,
+      priority,
     })
     onSaved()
     onClose()
@@ -36,6 +38,28 @@ export default function EditTaskSheet({ task, onClose, onSaved }: Props) {
         onClick={e => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--border)' }} />
+
+        <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Пріоритет</p>
+        <div className="flex gap-2 mb-4">
+          {(['must', 'nice'] as Priority[]).map(p => (
+            <button
+              key={p}
+              onClick={() => setPriority(p)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all active:scale-95"
+              style={{
+                background: priority === p
+                  ? (p === 'must' ? 'var(--coral)' : 'var(--lime)')
+                  : 'var(--surface)',
+                color: priority === p
+                  ? (p === 'must' ? '#fff' : 'var(--bg)')
+                  : 'var(--text-muted)',
+                border: priority === p ? 'none' : '1px solid var(--border)',
+              }}
+            >
+              {p === 'must' ? 'MUST' : 'NICE'}
+            </button>
+          ))}
+        </div>
 
         <p className="text-[11px] uppercase tracking-widest mb-1.5" style={{ color: 'var(--text-muted)' }}>Назва</p>
         <textarea
