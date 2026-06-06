@@ -2,9 +2,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import ProgressBar from '@/components/ProgressBar'
 import EditTaskSheet from '@/components/EditTaskSheet'
+import FilterBar from '@/components/FilterBar'
 import { loadTasks, updateTaskStatus } from '@/lib/storage'
 import { googleCalendarUrl } from '@/lib/calendar'
-import type { Task, Complexity } from '@/lib/types'
+import type { Task, Complexity, Priority } from '@/lib/types'
 
 function formatDuration(min: number): string {
   if (min < 60) return `${min} хв`
@@ -23,6 +24,8 @@ export default function TodayPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isEvening, setIsEvening] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [filterPriority, setFilterPriority] = useState<Priority | null>(null)
+  const [filterComplexity, setFilterComplexity] = useState<Complexity | null>(null)
 
   const refresh = useCallback(() => {
     const all = loadTasks().filter(t => t.status === 'today' || t.status === 'done')
@@ -47,6 +50,11 @@ export default function TodayPage() {
   const progress = total > 0 ? done.length / total : 0
   const currentHour = new Date().getHours()
 
+  const visible = tasks.filter(t =>
+    (!filterPriority || t.priority === filterPriority) &&
+    (!filterComplexity || (t.complexity ?? 'medium') === filterComplexity)
+  )
+
   return (
     <>
       <div className="flex flex-col min-h-[calc(100dvh-64px)] px-5 pt-12">
@@ -61,14 +69,23 @@ export default function TodayPage() {
 
         <ProgressBar value={progress} />
 
-        <div className="flex-1 mt-6 space-y-3 overflow-y-auto">
-          {tasks.length === 0 ? (
+        <div className="mt-5">
+          <FilterBar
+            priority={filterPriority}
+            complexity={filterComplexity}
+            onPriority={setFilterPriority}
+            onComplexity={setFilterComplexity}
+          />
+        </div>
+
+        <div className="flex-1 space-y-3 overflow-y-auto">
+          {visible.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 pt-20">
               <span className="text-5xl">☀</span>
               <p style={{ color: 'var(--text-muted)' }}>Немає задач на сьогодні</p>
             </div>
           ) : (
-            tasks.map(task => {
+            visible.map(task => {
               const isDone = task.status === 'done'
               const isNow = task.deadline
                 ? new Date(task.deadline).getHours() === currentHour

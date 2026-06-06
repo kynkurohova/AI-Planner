@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import EditTaskSheet from '@/components/EditTaskSheet'
+import FilterBar from '@/components/FilterBar'
 import { loadTasks, updateTaskStatus } from '@/lib/storage'
 import { googleCalendarUrl } from '@/lib/calendar'
-import type { Task, Complexity } from '@/lib/types'
+import type { Task, Complexity, Priority } from '@/lib/types'
 
 function formatDuration(min: number): string {
   if (min < 60) return `${min} хв`
@@ -25,6 +26,8 @@ const COMPLEXITY_COLOR: Record<Complexity, string> = {
 export default function PlanPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [filterPriority, setFilterPriority] = useState<Priority | null>(null)
+  const [filterComplexity, setFilterComplexity] = useState<Complexity | null>(null)
 
   const refresh = useCallback(() => {
     const todayStr = new Date().toISOString().split('T')[0]
@@ -53,7 +56,15 @@ export default function PlanPage() {
     if (!grouped[key]) grouped[key] = []
     grouped[key].push(t)
   })
-  const dateKeys = Object.keys(grouped).sort()
+  const filteredGrouped: Record<string, Task[]> = {}
+  Object.keys(grouped).sort().forEach(date => {
+    const filtered = grouped[date].filter(t =>
+      (!filterPriority || t.priority === filterPriority) &&
+      (!filterComplexity || (t.complexity ?? 'medium') === filterComplexity)
+    )
+    if (filtered.length > 0) filteredGrouped[date] = filtered
+  })
+  const dateKeys = Object.keys(filteredGrouped).sort()
 
   return (
     <>
@@ -61,9 +72,16 @@ export default function PlanPage() {
         <h1 className="text-3xl font-black uppercase tracking-tight mb-1" style={{ color: 'var(--text-primary)' }}>
           Plan
         </h1>
-        <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>
           {tasks.length} задач · відсортовано від найближчої
         </p>
+
+        <FilterBar
+          priority={filterPriority}
+          complexity={filterComplexity}
+          onPriority={setFilterPriority}
+          onComplexity={setFilterComplexity}
+        />
 
         {tasks.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3">
@@ -72,6 +90,11 @@ export default function PlanPage() {
             <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>
               У Inbox натисни 📅, щоб призначити дату
             </p>
+          </div>
+        ) : dateKeys.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center gap-3">
+            <span className="text-5xl">🔍</span>
+            <p style={{ color: 'var(--text-muted)' }}>Немає задач за вибраними фільтрами</p>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto space-y-6">
@@ -82,7 +105,7 @@ export default function PlanPage() {
                   {date === todayStr ? `Сьогодні · ${formatDate(date)}` : formatDate(date)}
                 </p>
                 <div className="space-y-3">
-                  {grouped[date].map(task => {
+                  {filteredGrouped[date].map(task => {
                     const isMust = task.priority === 'must'
                     const complexity = task.complexity ?? 'medium'
                     return (
